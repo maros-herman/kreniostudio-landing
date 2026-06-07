@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krenio Studio — Architektonický dizajn</title>
+<link rel="icon" type="image/x-icon" href="obrazky/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Neue+Montreal:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0c0b09;
+    --bg2: #111009;
+    --surface: #161410;
+    --surface2: #1d1b15;
+    --gold: #c9a96e;
+    --gold2: #e8cc9a;
+    --gold-dim: #7a6441;
+    --text: #e8e2d6;
+    --text-muted: #8a8070;
+    --text-dim: #4a4438;
+    --border: rgba(201,169,110,0.15);
+    --border2: rgba(201,169,110,0.08);
+    --ff-display: 'Cormorant Garamond', Georgia, serif;
+    --ff-body: 'DM Sans', sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden; /* kľúčové — Safari ignoruje overflow-x na body */
+  }
+
+  /* --- SVETLÝ REŽIM — CSS premenné (šedá paleta) --- */
+  body.light-mode {
+    --bg: #e8e6e2;
+    --bg2: #dedad4;
+    --surface: #d2cec8;
+    --surface2: #c8c4bc;
+    --gold: #9a7535;
+    --gold2: #b8923f;
+    --gold-dim: #7a6441;
+    --text: #1a1814;
+    --text-muted: #3a3530;
+    --text-dim: #6a6358;
+    --border: rgba(26, 24, 20, 0.18);
+    --border2: rgba(26, 24, 20, 0.1);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--ff-body);
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: none;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+
+  /* --- Táto navigácia slúži na zarovnanie slniečka k odkazu Kontakt) --- */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 500;
+    padding: 2rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(12px);
+    background: linear-gradient(to bottom, rgba(12,11,9,0.9), transparent);
+    transition: padding 0.4s, background 0.4s;
+  }
+  nav.scrolled { padding: 1.2rem 4rem; background: rgba(12,11,9,0.95); }
+  
+  /* Prispôsobenie navigácie pre svetlý režim */
+  body.light-mode nav {
+    background: linear-gradient(to bottom, rgba(232,230,226,0.97), transparent);
+  }
+  body.light-mode nav.scrolled { background: rgba(232,230,226,0.97); }
+
+  .nav-logo {
+    font-family: var(--ff-display);
+    font-size: 1.4rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  /* Spojovací kontajner pre odkazy a switch button */
+  .nav-right-block {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* Štýl pre zaoblené tlačidlo slniečka hneď vedľa menu */
+  .theme-toggle-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+  .theme-toggle-btn:hover {
+    border-color: var(--gold);
+    transform: scale(1.05);
+  }
+
+  .nav-cta {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 0.6rem 1.4rem;
+    transition: all 0.3s;
+  }
+  .nav-cta:hover { background: var(--gold); color: var(--bg); }
+
+
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, background 0.2s, width 0.3s, height 0.3s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(201,169,110,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s ease-out, width 0.3s, height 0.3s, border-color 0.3s;
+  }
+  body:hover .cursor { opacity: 1; }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-size: 256px;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.5;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 8rem 4rem 6rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s 0.3s forwards;
+  }
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-title {
+    font-family: var(--ff-display);
+    font-size: clamp(3.5rem, 6vw, 6rem);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 1s 0.5s forwards;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    max-width: 360px;
+    margin-bottom: 3.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--bg);
+    text-decoration: none;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 1rem 2.5rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.1);
+    transform: translateX(-100%);
+    transition: transform 0.4s;
+  }
+  .btn-primary:hover::after { transform: translateX(0); }
+
+  .btn-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: color 0.3s;
+  }
+  .btn-link:hover { color: var(--gold); }
+  .btn-link::after {
+    content: '→';
+    transition: transform 0.3s;
+  }
+  .btn-link:hover::after { transform: translateX(4px); }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-img {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #1a1710 0%, #0d0c08 100%);
+    overflow: hidden;
+  }
+
+  /* SVG architectural illustration */
+  .hero-illustration {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, var(--bg) 0%, transparent 40%);
+    z-index: 1;
+  }
+
+  .hero-counter {
+    position: absolute;
+    bottom: 6rem;
+    right: 3rem;
+    z-index: 3;
+    text-align: right;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.2s forwards;
+  }
+  .hero-counter-num {
+    font-family: var(--ff-display);
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .hero-counter-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-top: 0.4rem;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.4s forwards;
+    text-decoration: none;
+  }
+  .hero-scroll span {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    writing-mode: vertical-rl;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* MARQUEE */
+  .marquee-wrap {
+    border-top: 1px solid var(--border2);
+    border-bottom: 1px solid var(--border2);
+    padding: 1.2rem 0;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .marquee-track {
+    display: flex;
+    gap: 3rem;
+    width: max-content;
+    animation: marquee 28s linear infinite;
+  }
+  .marquee-item {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+  }
+  .marquee-item::after {
+    content: '◆';
+    color: var(--gold);
+    font-size: 0.4rem;
+  }
+
+  /* ABOUT SECTION */
+  .about {
+    padding: 10rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 8rem;
+    align-items: center;
+    position: relative;
+  }
+  .about::before {
+    content: '01';
+    position: absolute;
+    top: 5rem;
+    left: 4rem;
+    font-family: var(--ff-display);
+    font-size: 8rem;
+    color: var(--border2);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .section-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-tag::before {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .section-title {
+    font-family: var(--ff-display);
+    font-size: clamp(2.5rem, 4vw, 4rem);
+    font-weight: 300;
+    line-height: 1.15;
+    margin-bottom: 2rem;
+  }
+  .section-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .about-text p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.9;
+    margin-bottom: 1.5rem;
+  }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 3.5rem;
+    padding-top: 3.5rem;
+    border-top: 1px solid var(--border2);
+  }
+  .stat-num {
+    font-family: var(--ff-display);
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .stat-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .about-visual {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: visible; /* accent card vyčnieva zámerne na desktop */
+  }
+  .about-img-main {
+    position: absolute;
+    inset: 0;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    overflow: hidden;
+  }
+  .about-img-accent {
+    position: absolute;
+    bottom: -3rem;
+    left: -3rem;
+    width: 55%;
+    aspect-ratio: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  /* PROJECTS */
+  .projects {
+    padding: 8rem 4rem;
+    position: relative;
+  }
+  .projects::before {
+    content: '02';
+    position: absolute;
+    top: 3rem;
+    right: 4rem;
+    font-family: var(--ff-display);
+    font-size: 8rem;
+    color: var(--border2);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .projects-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 5rem;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .project-card {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    cursor: none;
+    background: var(--surface);
+  }
+  .project-card:first-child {
+    grid-row: span 2;
+    aspect-ratio: auto;
+  }
+
+  .project-bg {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .project-card:hover .project-bg { transform: scale(1.06); }
+
+  .project-info {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 2.5rem 2rem 2rem;
+    background: linear-gradient(to top, rgba(12,11,9,0.95) 0%, transparent 100%);
+    transform: translateY(4px);
+    transition: transform 0.4s;
+  }
+  .project-card:hover .project-info { transform: translateY(0); }
+
+  .project-cat {
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+  }
+  .project-name {
+    font-family: var(--ff-display);
+    font-size: 1.6rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+  }
+  .project-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .project-arrow {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(201,169,110,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: all 0.4s;
+  }
+  .project-card:hover .project-arrow {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* SERVICES */
+  .services {
+    padding: 10rem 4rem;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+  .services::before {
+    content: '03';
+    position: absolute;
+    bottom: 2rem;
+    left: 4rem;
+    font-family: var(--ff-display);
+    font-size: 8rem;
+    color: rgba(201,169,110,0.05);
+    pointer-events: none;
+  }
+
+  .services-inner {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 8rem;
+    align-items: start;
+  }
+
+  .services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    counter-reset: svc;
+  }
+
+  .service-item {
+    border-bottom: 1px solid var(--border2);
+    padding: 2rem 0;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+    counter-increment: svc;
+    transition: padding 0.4s;
+  }
+  .service-item:hover { padding-left: 1rem; }
+  .service-item::before {
+    content: counter(svc, decimal-leading-zero);
+    position: absolute;
+    top: 2rem;
+    right: 0;
+    font-family: var(--ff-display);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .service-name {
+    font-family: var(--ff-display);
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s;
+  }
+  .service-item:hover .service-name { color: var(--gold); }
+
+  .service-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, margin 0.3s;
+  }
+  .service-item:hover .service-desc {
+    max-height: 100px;
+    margin-top: 0.8rem;
+  }
+
+  .services-feature {
+    position: relative;
+    padding: 4rem;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+  }
+  .services-feature-quote {
+    font-family: var(--ff-display);
+    font-size: 1.6rem;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 2.5rem;
+  }
+  .services-feature-quote em { color: var(--gold); font-style: normal; }
+
+  .feature-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .pill {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    border: 1px solid var(--border2);
+    padding: 0.4rem 1rem;
+  }
+
+  /* PROCESS */
+  .process {
+    padding: 10rem 4rem;
+  }
+
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 5rem;
+    position: relative;
+  }
+  .process-steps::before {
+    content: '';
+    position: absolute;
+    top: 2rem;
+    left: calc(12.5%);
+    right: calc(12.5%);
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+  }
+
+  .process-step {
+    padding: 0 2rem;
+    border-left: 1px solid var(--border2);
+    position: relative;
+  }
+  .process-step:first-child { border-left: none; }
+
+  .step-num {
+    font-family: var(--ff-display);
+    font-size: 0.75rem;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .step-num::before {
+    content: '';
+    width: 8px; height: 8px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: block;
+  }
+
+  .step-title {
+    font-family: var(--ff-display);
+    font-size: 1.4rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+  }
+
+  .step-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+
+  /* TESTIMONIALS */
+  .testimonials {
+    padding: 8rem 4rem;
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 5rem;
+  }
+
+  .testimonial-card {
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    padding: 2.5rem;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+  .testimonial-card:hover { border-color: var(--border); }
+
+  .testimonial-card::before {
+    content: '"';
+    font-family: var(--ff-display);
+    font-size: 5rem;
+    color: var(--gold);
+    opacity: 0.2;
+    position: absolute;
+    top: 1rem;
+    left: 2rem;
+    line-height: 1;
+  }
+
+  .testimonial-text {
+    font-family: var(--ff-display);
+    font-size: 1.05rem;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .author-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+  .author-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.2rem;
+  }
+  .author-title {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  /* CTA */
+  .cta {
+    padding: 12rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,169,110,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2rem;
+  }
+
+  .cta-title {
+    font-family: var(--ff-display);
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 3rem;
+  }
+  .cta-title em { font-style: italic; color: var(--gold); }
+
+  .cta-sub {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    max-width: 460px;
+    margin: 0 auto 4rem;
+    line-height: 1.8;
+  }
+
+  .cta-contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .cta-email {
+    font-family: var(--ff-display);
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.3rem;
+    transition: border-color 0.3s;
+  }
+  .cta-email:hover { border-color: var(--gold); }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem 4rem;
+    border-top: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-logo {
+    font-family: var(--ff-display);
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .footer-copy {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* REVEAL ON SCROLL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+  .reveal-delay-1 { transition-delay: 0.15s; }
+  .reveal-delay-2 { transition-delay: 0.3s; }
+  .reveal-delay-3 { transition-delay: 0.45s; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav {
+      padding: 1.5rem 2rem;
+      /* Nav sa nesmie rozširovať za viewport */
+      max-width: 100vw;
+      box-sizing: border-box;
+    }
+    .nav-links { display: none; }
+    .nav-right-block { gap: 1rem; }
+    .nav-cta { padding: 0.5rem 1rem; font-size: 0.65rem; }
+
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { height: 40vh; }
+    .hero-left { padding: 7rem 2rem 4rem; }
+
+    /* About — accent karta nesmie vyčnievať doľava na mobile */
+    .about { grid-template-columns: 1fr; gap: 4rem; padding: 6rem 2rem; }
+    .about-visual {
+      aspect-ratio: 16/9;
+      overflow: hidden; /* orezanie accent karty */
+    }
+    .about-img-accent {
+      left: 0;        /* reset negatívneho left */
+      bottom: 0;      /* reset negatívneho bottom */
+      width: 45%;
+    }
+
+    /* Decorative large numbers — orezané kontajnerom */
+    .about::before,
+    .projects::before,
+    .services::before { display: none; }
+
+    .projects { padding: 6rem 2rem; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .project-card:first-child { grid-row: span 1; aspect-ratio: 4/3; }
+    .services-inner { grid-template-columns: 1fr; gap: 4rem; }
+    .services { padding: 6rem 2rem; }
+    .process-steps { grid-template-columns: 1fr; gap: 3rem; } /* 1 stĺpec, nie 2 */
+    .process { padding: 6rem 2rem; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .testimonials { padding: 6rem 2rem; }
+    .cta { padding: 8rem 2rem; }
+    footer { flex-direction: column; gap: 2rem; text-align: center; padding: 2rem; }
+  }
+
+  /* Dotykové zariadenia — vypnutie vlastného kurzora */
+  @media (pointer: coarse) {
+    body { cursor: auto !important; }
+    .cursor, .cursor-ring { display: none !important; }
+    * { cursor: auto; }
+    a, button { cursor: pointer; }
+  }
+  /* ============================================
+			SVETLÝ REŽIM — šedá paleta
+     ============================================ */
+
+  /* HERO */
+  body.light-mode .hero-tag { color: var(--gold); opacity: 1; }
+  body.light-mode .hero-title { color: var(--text); }
+  body.light-mode .hero-desc { color: var(--text-muted); }
+  body.light-mode .hero-counter-num { color: var(--gold); }
+  body.light-mode .hero-counter-label { color: var(--text-muted); }
+  body.light-mode .hero-scroll span { color: var(--text-muted); }
+  body.light-mode .hero-overlay {
+    background: linear-gradient(to right, var(--bg) 0%, transparent 55%);
+  }
+  body.light-mode .hero-img {
+    background: linear-gradient(135deg, #c8c4bc 0%, #b8b4ac 100%);
+  }
+
+  /* SVG ilustrácie — šedé pozadia */
+  body.light-mode .hero-illustration rect:first-child { fill: #c4c0b8; }
+  body.light-mode .about-img-main svg rect:first-child { fill: #cac6be; }
+  body.light-mode .about-img-accent svg rect:first-child { fill: #beb9b0; }
+  body.light-mode .project-bg svg rect:first-child { fill: #b8b4ac; }
+
+  /* SVG čiary, obdĺžniky, krivky — je tu zlaté stroke tmavej farby pre kontrast */
+  body.light-mode .hero-illustration line,
+  body.light-mode .hero-illustration polyline,
+  body.light-mode .hero-illustration polygon,
+  body.light-mode .hero-illustration path,
+  body.light-mode .hero-illustration ellipse,
+  body.light-mode .hero-illustration circle,
+  body.light-mode .hero-illustration rect:not(:first-child) {
+    stroke: #6b5a3a;
+    stroke-opacity: 1 !important;
+  }
+
+  body.light-mode .about-img-main svg line,
+  body.light-mode .about-img-main svg polyline,
+  body.light-mode .about-img-main svg polygon,
+  body.light-mode .about-img-main svg path,
+  body.light-mode .about-img-main svg ellipse,
+  body.light-mode .about-img-main svg circle,
+  body.light-mode .about-img-main svg rect:not(:first-child) {
+    stroke: #6b5a3a;
+    stroke-opacity: 1 !important;
+  }
+
+  body.light-mode .about-img-accent svg line,
+  body.light-mode .about-img-accent svg polyline,
+  body.light-mode .about-img-accent svg path,
+  body.light-mode .about-img-accent svg ellipse,
+  body.light-mode .about-img-accent svg circle,
+  body.light-mode .about-img-accent svg rect:not(:first-child) {
+    stroke: #6b5a3a;
+    stroke-opacity: 1 !important;
+  }
+
+  body.light-mode .project-bg svg line,
+  body.light-mode .project-bg svg polyline,
+  body.light-mode .project-bg svg polygon,
+  body.light-mode .project-bg svg path,
+  body.light-mode .project-bg svg ellipse,
+  body.light-mode .project-bg svg circle,
+  body.light-mode .project-bg svg rect:not(:first-child) {
+    stroke: #6b5a3a;
+    stroke-opacity: 1 !important;
+  }
+
+  /* SVG výplne — tmavšie odtiene pre fills (interiérové plochy) */
+  body.light-mode .hero-illustration polygon { fill: rgba(107, 90, 58, 0.08); }
+  body.light-mode .hero-illustration rect:not(:first-child) { fill: rgba(180, 175, 165, 0.6); }
+
+  /* MARQUEE */
+  body.light-mode .marquee-wrap {
+    background: var(--surface);
+    border-top-color: var(--border2);
+    border-bottom-color: var(--border2);
+  }
+  body.light-mode .marquee-item { color: var(--text-muted); }
+
+  /* ABOUT */
+  body.light-mode .section-tag { color: var(--gold); }
+  body.light-mode .section-title { color: var(--text); }
+  body.light-mode .about-text p { color: var(--text-muted); }
+  body.light-mode .stat-num { color: var(--gold); }
+  body.light-mode .stat-label { color: var(--text-muted); }
+  body.light-mode .about::before { color: var(--border2); }
+  body.light-mode .about-stats { border-top-color: var(--border2); }
+  body.light-mode .about-img-main {
+    background: var(--surface);
+    border-color: var(--border2);
+  }
+  body.light-mode .about-img-accent {
+    background: var(--surface2);
+    border-color: var(--border);
+  }
+
+  /* BUTTONS */
+  body.light-mode .btn-link { color: var(--text-muted); }
+  body.light-mode .btn-link:hover { color: var(--gold); }
+  body.light-mode .btn-primary { background: var(--gold); color: #f5f2ee; }
+
+  /* PROJECTS */
+  body.light-mode .projects::before { color: var(--border2); }
+  body.light-mode .project-card { background: var(--surface); }
+
+  /* SERVICES */
+  body.light-mode .services { background: var(--surface); }
+  body.light-mode .service-item { border-bottom-color: var(--border2); }
+  body.light-mode .service-item::before { color: var(--text-dim); }
+  body.light-mode .service-name { color: var(--text); }
+  body.light-mode .service-item:hover .service-name { color: var(--gold); }
+  body.light-mode .service-desc { color: var(--text-muted); }
+  body.light-mode .services-feature {
+    background: var(--bg);
+    border-color: var(--border);
+  }
+  body.light-mode .services-feature-quote { color: var(--text); }
+  body.light-mode .pill {
+    color: var(--text-dim);
+    border-color: var(--border2);
+  }
+
+  /* PROCESS */
+  body.light-mode .process-step { border-left-color: var(--border2); }
+  body.light-mode .step-num { color: var(--gold); }
+  body.light-mode .step-title { color: var(--text); }
+  body.light-mode .step-desc { color: var(--text-muted); }
+  body.light-mode .process-steps::before {
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+  }
+
+  /* TESTIMONIALS */
+  body.light-mode .testimonials { background: var(--surface); }
+  body.light-mode .testimonial-card {
+    background: var(--bg);
+    border-color: var(--border2);
+  }
+  body.light-mode .testimonial-card:hover { border-color: var(--border); }
+  body.light-mode .testimonial-text { color: var(--text); }
+  body.light-mode .author-name { color: var(--text); }
+  body.light-mode .author-title { color: var(--text-muted); }
+  body.light-mode .author-avatar {
+    background: var(--surface2);
+    border-color: var(--border);
+    color: var(--gold);
+  }
+
+  /* CTA */
+  body.light-mode .cta-label { color: var(--gold); }
+  body.light-mode .cta-title { color: var(--text); }
+  body.light-mode .cta-sub { color: var(--text-muted); }
+  body.light-mode .cta-email { color: var(--gold); border-bottom-color: var(--border); }
+  body.light-mode .cta-email:hover { border-bottom-color: var(--gold); }
+
+  /* FOOTER */
+  body.light-mode footer { border-top-color: var(--border2); }
+  body.light-mode .footer-copy { color: var(--text-muted); }
+
+  /* --- FOOTER SOCIAL ICONS --- */
+	.footer-social {
+	  list-style: none;             /* Odstráni bodky zoznamu */
+	  display: flex;
+	  gap: 2rem;                    /* Medzera medzi jednotlivými sieťami */
+	  padding: 0;
+	}
+
+	.footer-social a {
+	  display: flex;
+	  align-items: center;          /* Vycentruje ikonu a text na stred */
+	  gap: 0.6rem;                  /* Medzera medzi ikonkou a textom */
+	  text-decoration: none;
+	  color: var(--text-dim);       /* Použije tvoju tmavšiu premennú pre elegantný vzhľad */
+	  font-size: 0.72rem;           /* Rovnaká veľkosť ako ostatné menu odkazy */
+	  letter-spacing: 0.15em;
+	  text-transform: uppercase;
+	  transition: color 0.3s ease;
+	}
+
+	.footer-social a svg {
+	  width: 14px;                  /* Jemná veľkosť ikonky, aby nekričala */
+	  height: 14px;
+	  fill: currentColor;           /* Ikonka preberie farbu textu a zladí sa */
+	}
+
+	.footer-social a:hover {
+	  color: var(--gold);           /* Pri nabehnutí myšou sa text aj ikonka rozsvietia na zlato */
+	}
+
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<nav id="navbar">
+  <a href="#" class="nav-logo">Krenio Studio</a>
+  <div class="nav-right-block">
+    <ul class="nav-links">
+      <li><a href="#about">O nás</a></li>
+      <li><a href="#projects">Projekty</a></li>
+      <li><a href="#services">Služby</a></li>
+      <li><a href="#process">Proces</a></li>
+    </ul>
+    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Prepnúť režim zobrazenia">
+      <span id="theme-icon">☀️</span>
+    </button>
+    <a href="#contact" class="nav-cta">Začať projekt</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <span class="hero-tag">Architektonický dizajn · Tvaromesto</span>
+    <h1 class="hero-title">
+      Priestory,<br>
+      ktoré <em>hovoria</em><br>
+      za vás.
+    </h1>
+    <p class="hero-desc">
+      Vytvárame interiéry a architektonické riešenia, kde každý detail nesie zámer. Nie len funkčnosť, ale aj zážitok.
+    </p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn-primary">Zobraziť práce</a>
+      <a href="#about" class="btn-link">Náš príbeh</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-img">
+      <!-- Architectural SVG illustration -->
+      <svg class="hero-illustration" viewBox="0 0 800 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="floorGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1a1810"/>
+            <stop offset="100%" stop-color="#0a0906"/>
+          </linearGradient>
+          <linearGradient id="wallGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#161410"/>
+            <stop offset="100%" stop-color="#1e1c16"/>
+          </linearGradient>
+          <linearGradient id="lightBeam" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c9a96e" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#c9a96e" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="windowLight" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e8d4a0" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#c9a96e" stop-opacity="0.04"/>
+          </linearGradient>
+          <radialGradient id="spotLight" cx="0.5" cy="0" r="0.8">
+            <stop offset="0%" stop-color="#c9a96e" stop-opacity="0.12"/>
+            <stop offset="100%" stop-color="#c9a96e" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="softBlur">
+            <feGaussianBlur stdDeviation="2"/>
+          </filter>
+        </defs>
+
+        <!-- Background -->
+        <rect width="800" height="900" fill="#0c0b09"/>
+
+        <!-- Floor -->
+        <polygon points="0,650 800,520 800,900 0,900" fill="url(#floorGrad)"/>
+        <!-- Floor lines perspective -->
+        <line x1="0" y1="900" x2="400" y2="560" stroke="#c9a96e" stroke-width="0.3" stroke-opacity="0.15"/>
+        <line x1="160" y1="900" x2="450" y2="555" stroke="#c9a96e" stroke-width="0.3" stroke-opacity="0.1"/>
+        <line x1="320" y1="900" x2="500" y2="548" stroke="#c9a96e" stroke-width="0.3" stroke-opacity="0.1"/>
+        <line x1="480" y1="900" x2="560" y2="542" stroke="#c9a96e" stroke-width="0.3" stroke-opacity="0.1"/>
+        <line x1="640" y1="900" x2="620" y2="535" stroke="#c9a96e" stroke-width="0.3" stroke-opacity="0.1"/>
+        <line x1="800" y1="900" x2="700" y2="525" stroke="#c9a96e" stroke-width="0.3" stroke-opacity="0.1"/>
+
+        <!-- Back wall -->
+        <rect x="0" y="0" width="800" height="650" fill="url(#wallGrad)" opacity="0.8"/>
+
+        <!-- Large window panel -->
+        <rect x="120" y="60" width="280" height="520" fill="url(#windowLight)" rx="1"/>
+        <rect x="120" y="60" width="280" height="520" fill="none" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.3"/>
+        <!-- Window pane dividers -->
+        <line x1="260" y1="60" x2="260" y2="580" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.25"/>
+        <line x1="120" y1="320" x2="400" y2="320" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.25"/>
+
+        <!-- Light beam from window -->
+        <polygon points="120,60 400,60 500,650 20,700" fill="url(#lightBeam)"/>
+
+        <!-- Spotlight from ceiling -->
+        <ellipse cx="550" cy="0" rx="200" ry="50" fill="url(#spotLight)"/>
+
+        <!-- Wall panels right -->
+        <rect x="460" y="80" width="4" height="500" fill="#c9a96e" opacity="0.15"/>
+        <rect x="490" y="80" width="260" height="500" fill="#161410" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.12"/>
+        <rect x="510" y="110" width="220" height="200" fill="#1a1810" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.2"/>
+        <rect x="510" y="330" width="220" height="240" fill="#1a1810" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.2"/>
+
+        <!-- Decorative artwork on wall -->
+        <rect x="530" y="135" width="60" height="80" fill="none" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.4"/>
+        <line x1="530" y1="175" x2="590" y2="175" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.3"/>
+        <rect x="600" y="135" width="95" height="80" fill="none" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.25"/>
+
+        <!-- Minimal chair silhouette -->
+        <!-- Chair legs -->
+        <line x1="200" y1="580" x2="195" y2="640" stroke="#c9a96e" stroke-width="1.5" stroke-opacity="0.5"/>
+        <line x1="270" y1="580" x2="275" y2="640" stroke="#c9a96e" stroke-width="1.5" stroke-opacity="0.5"/>
+        <line x1="200" y1="610" x2="195" y2="650" stroke="#c9a96e" stroke-width="1.5" stroke-opacity="0.3"/>
+        <line x1="270" y1="610" x2="275" y2="650" stroke="#c9a96e" stroke-width="1.5" stroke-opacity="0.3"/>
+        <!-- Seat -->
+        <rect x="188" y="560" width="96" height="22" rx="2" fill="#1a1810" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.5"/>
+        <!-- Back -->
+        <rect x="192" y="480" width="88" height="84" rx="2" fill="#1a1810" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.45"/>
+        <!-- Chair back lines -->
+        <line x1="215" y1="480" x2="215" y2="562" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.3"/>
+        <line x1="240" y1="480" x2="240" y2="562" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.3"/>
+        <line x1="265" y1="480" x2="265" y2="562" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.3"/>
+
+        <!-- Floor lamp -->
+        <line x1="580" y1="640" x2="578" y2="350" stroke="#c9a96e" stroke-width="1.2" stroke-opacity="0.5"/>
+        <line x1="578" y1="350" x2="615" y2="290" stroke="#c9a96e" stroke-width="1" stroke-opacity="0.5"/>
+        <!-- Lamp shade -->
+        <polygon points="590,285 640,285 625,250 605,250" fill="#1e1c16" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.5"/>
+        <!-- Lamp glow -->
+        <ellipse cx="615" cy="288" rx="30" ry="8" fill="#c9a96e" opacity="0.06" filter="url(#softBlur)"/>
+        <!-- Base -->
+        <ellipse cx="580" cy="640" rx="12" ry="3" fill="#c9a96e" opacity="0.3"/>
+
+        <!-- Side table -->
+        <rect x="300" y="590" width="80" height="8" rx="1" fill="#1a1810" stroke="#c9a96e" stroke-width="0.7" stroke-opacity="0.45"/>
+        <line x1="310" y1="598" x2="310" y2="635" stroke="#c9a96e" stroke-width="1" stroke-opacity="0.4"/>
+        <line x1="370" y1="598" x2="370" y2="635" stroke="#c9a96e" stroke-width="1" stroke-opacity="0.4"/>
+        <!-- Vase on table -->
+        <rect x="330" y="560" width="18" height="30" rx="2" fill="#161410" stroke="#c9a96e" stroke-width="0.7" stroke-opacity="0.5"/>
+        <!-- Plant stems -->
+        <line x1="336" y1="560" x2="328" y2="535" stroke="#4a6644" stroke-width="1.2" stroke-opacity="0.7"/>
+        <line x1="339" y1="558" x2="345" y2="530" stroke="#4a6644" stroke-width="1.2" stroke-opacity="0.7"/>
+        <line x1="342" y1="560" x2="352" y2="540" stroke="#4a6644" stroke-width="1" stroke-opacity="0.6"/>
+        <!-- Leaves -->
+        <ellipse cx="326" cy="530" rx="10" ry="5" fill="#3a5534" opacity="0.7" transform="rotate(-30 326 530)"/>
+        <ellipse cx="347" cy="526" rx="11" ry="4" fill="#3a5534" opacity="0.7" transform="rotate(20 347 526)"/>
+        <ellipse cx="354" cy="537" rx="8" ry="4" fill="#3a5534" opacity="0.6" transform="rotate(45 354 537)"/>
+
+        <!-- Gold accent line on floor -->
+        <line x1="0" y1="652" x2="800" y2="522" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.25"/>
+
+        <!-- Floating particles / dust -->
+        <circle cx="180" cy="200" r="1.2" fill="#c9a96e" opacity="0.25"/>
+        <circle cx="240" cy="350" r="0.8" fill="#c9a96e" opacity="0.2"/>
+        <circle cx="160" cy="440" r="1" fill="#c9a96e" opacity="0.15"/>
+        <circle cx="300" cy="150" r="0.7" fill="#c9a96e" opacity="0.2"/>
+        <circle cx="350" cy="280" r="1.1" fill="#c9a96e" opacity="0.18"/>
+
+        <!-- Ceiling details -->
+        <rect x="430" y="0" width="370" height="3" fill="#c9a96e" opacity="0.08"/>
+        <rect x="430" y="8" width="370" height="1" fill="#c9a96e" opacity="0.05"/>
+      </svg>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-counter">
+      <div class="hero-counter-num">14+</div>
+      <div class="hero-counter-label">Rokov skúseností</div>
+    </div>
+  </div>
+  <a href="#about" class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scrollovať</span>
+  </a>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">Rezidenčný dizajn</span>
+    <span class="marquee-item">Komerčné priestory</span>
+    <span class="marquee-item">Architektonické poradenstvo</span>
+    <span class="marquee-item">Projektová dokumentácia</span>
+    <span class="marquee-item">Interiérový dizajn</span>
+    <span class="marquee-item">Vizualizácie</span>
+    <span class="marquee-item">Rekonštrukcie</span>
+    <span class="marquee-item">Rezidenčný dizajn</span>
+    <span class="marquee-item">Komerčné priestory</span>
+    <span class="marquee-item">Architektonické poradenstvo</span>
+    <span class="marquee-item">Projektová dokumentácia</span>
+    <span class="marquee-item">Interiérový dizajn</span>
+    <span class="marquee-item">Vizualizácie</span>
+    <span class="marquee-item">Rekonštrukcie</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-text">
+    <div class="section-tag reveal">O štúdiu</div>
+    <h2 class="section-title reveal reveal-delay-1">Kde <em>remeslo</em><br>stretáva víziu.</h2>
+    <p class="reveal reveal-delay-2">Krenio Studio bolo založené s presvedčením, že architektúra nie je len o budovách — je o živote, ktorý sa v nich odohráva. Každý projekt začíname hlbokým porozumením toho, kto ste a čo potrebujete.</p>
+    <p class="reveal reveal-delay-2">Od prvej skice po odovzdanie kľúčov stojíme pri vás. Náš tím architektov a dizajnérov spája technickú precíznosť s umeleckým citom pre detail.</p>
+    <div class="about-stats reveal reveal-delay-3">
+      <div>
+        <div class="stat-num">147</div>
+        <div class="stat-label">Dokončených projektov</div>
+      </div>
+      <div>
+        <div class="stat-num">14+</div>
+        <div class="stat-label">Rokov v brandži</div>
+      </div>
+      <div>
+        <div class="stat-num">8</div>
+        <div class="stat-label">Ocenení</div>
+      </div>
+      <div>
+        <div class="stat-num">98%</div>
+        <div class="stat-label">Spokojnosť klientov</div>
+      </div>
+    </div>
+  </div>
+  <div class="about-visual reveal reveal-delay-2">
+    <div class="about-img-main">
+      <svg viewBox="0 0 480 640" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <rect width="480" height="640" fill="#111009"/>
+        <!-- Modern building facade illustration -->
+        <rect x="40" y="80" width="400" height="500" fill="#141210" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.2"/>
+        <!-- Window grid -->
+        <g stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.3">
+          <!-- Row 1 -->
+          <rect x="70" y="110" width="80" height="60" fill="url(#windowLight)"/>
+          <rect x="170" y="110" width="80" height="60" fill="url(#windowLight)"/>
+          <rect x="270" y="110" width="80" height="60" fill="url(#windowLight)"/>
+          <rect x="370" y="110" width="50" height="60" fill="url(#windowLight)"/>
+          <!-- Row 2 -->
+          <rect x="70" y="190" width="80" height="60" fill="#0f0e0b"/>
+          <rect x="170" y="190" width="80" height="60" fill="url(#windowLight)" fill-opacity="0.6"/>
+          <rect x="270" y="190" width="80" height="60" fill="#0f0e0b"/>
+          <rect x="370" y="190" width="50" height="60" fill="url(#windowLight)"/>
+          <!-- Row 3 -->
+          <rect x="70" y="270" width="80" height="60" fill="url(#windowLight)"/>
+          <rect x="170" y="270" width="80" height="60" fill="#0f0e0b"/>
+          <rect x="270" y="270" width="80" height="60" fill="url(#windowLight)" fill-opacity="0.5"/>
+          <rect x="370" y="270" width="50" height="60" fill="#0f0e0b"/>
+          <!-- Row 4 -->
+          <rect x="70" y="350" width="80" height="60" fill="#0f0e0b"/>
+          <rect x="170" y="350" width="80" height="60" fill="url(#windowLight)"/>
+          <rect x="270" y="350" width="80" height="60" fill="#0f0e0b"/>
+          <rect x="370" y="350" width="50" height="60" fill="url(#windowLight)" fill-opacity="0.7"/>
+          <!-- Large ground floor -->
+          <rect x="70" y="430" width="180" height="120" fill="#0d0c09"/>
+          <rect x="270" y="430" width="150" height="120" fill="url(#windowLight)" fill-opacity="0.4"/>
+        </g>
+        <!-- Gold vertical accent -->
+        <rect x="155" y="80" width="2" height="500" fill="#c9a96e" opacity="0.12"/>
+        <rect x="255" y="80" width="2" height="500" fill="#c9a96e" opacity="0.12"/>
+        <rect x="355" y="80" width="2" height="500" fill="#c9a96e" opacity="0.12"/>
+        <!-- Roofline detail -->
+        <rect x="40" y="76" width="400" height="4" fill="#c9a96e" opacity="0.25"/>
+        <!-- Ground line -->
+        <rect x="0" y="580" width="480" height="2" fill="#c9a96e" opacity="0.2"/>
+        <!-- Foreground elements -->
+        <rect x="0" y="582" width="480" height="58" fill="#0a0908"/>
+        <line x1="80" y1="582" x2="80" y2="640" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.2"/>
+        <line x1="160" y1="582" x2="160" y2="640" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.2"/>
+        <line x1="240" y1="582" x2="240" y2="640" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.2"/>
+        <line x1="320" y1="582" x2="320" y2="640" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.2"/>
+        <line x1="400" y1="582" x2="400" y2="640" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.2"/>
+      </svg>
+    </div>
+    <div class="about-img-accent">
+      <svg viewBox="0 0 260 260" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <rect width="260" height="260" fill="#1d1b15"/>
+        <!-- Geometric floor plan -->
+        <g stroke="#c9a96e" stroke-opacity="0.4" fill="none">
+          <rect x="20" y="20" width="220" height="220" stroke-width="0.8"/>
+          <rect x="40" y="40" width="80" height="100" stroke-width="0.6"/>
+          <rect x="140" y="40" width="100" height="60" stroke-width="0.6"/>
+          <rect x="140" y="120" width="100" height="100" stroke-width="0.6"/>
+          <rect x="40" y="160" width="80" height="80" stroke-width="0.6"/>
+          <!-- Door indicators -->
+          <path d="M40,140 Q60,140 60,160" stroke-width="0.5"/>
+          <path d="M140,80 Q140,100 160,100" stroke-width="0.5"/>
+        </g>
+        <!-- Compass rose -->
+        <text x="230" y="30" font-size="7" fill="#c9a96e" fill-opacity="0.5" font-family="serif" text-anchor="middle">N</text>
+        <line x1="230" y1="16" x2="230" y2="32" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.4"/>
+        <!-- Scale bar -->
+        <line x1="25" y1="245" x2="75" y2="245" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.4"/>
+        <line x1="25" y1="242" x2="25" y2="248" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.4"/>
+        <line x1="75" y1="242" x2="75" y2="248" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.4"/>
+        <text x="50" y="243" font-size="5.5" fill="#c9a96e" fill-opacity="0.4" text-anchor="middle" font-family="monospace">5m</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="projects">
+  <div class="projects-header">
+    <div>
+      <div class="section-tag reveal">Naše projekty</div>
+      <h2 class="section-title reveal reveal-delay-1">Priestory,<br>ktoré <em>pretrvajú.</em></h2>
+    </div>
+    <a href="#contact" class="btn-link reveal reveal-delay-2">Všetky projekty</a>
+  </div>
+  <div class="projects-grid reveal">
+    <!-- Project 1 - large -->
+    <div class="project-card">
+      <div class="project-bg">
+        <svg viewBox="0 0 600 800" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <rect width="600" height="800" fill="#0f0e0a"/>
+          <!-- Luxury penthouse interior -->
+          <rect x="0" y="400" width="600" height="400" fill="#0c0b08"/>
+          <!-- Perspective floor tiles -->
+          <g stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.12">
+            <line x1="0" y1="800" x2="300" y2="420"/><line x1="100" y1="800" x2="310" y2="418"/><line x1="200" y1="800" x2="330" y2="415"/><line x1="300" y1="800" x2="350" y2="410"/><line x1="400" y1="800" x2="380" y2="408"/><line x1="500" y1="800" x2="420" y2="412"/><line x1="600" y1="800" x2="460" y2="415"/>
+          </g>
+          <!-- Large windows -->
+          <rect x="0" y="50" width="280" height="350" fill="#1a1810" opacity="0.6"/>
+          <rect x="300" y="50" width="300" height="350" fill="#1a1810" opacity="0.5"/>
+          <!-- Window glow -->
+          <rect x="0" y="50" width="280" height="350" fill="#c9a96e" opacity="0.03"/>
+          <rect x="300" y="50" width="300" height="350" fill="#c9a96e" opacity="0.04"/>
+          <!-- Window frames -->
+          <rect x="0" y="50" width="280" height="350" fill="none" stroke="#c9a96e" stroke-width="1" stroke-opacity="0.2"/>
+          <rect x="300" y="50" width="300" height="350" fill="none" stroke="#c9a96e" stroke-width="1" stroke-opacity="0.15"/>
+          <line x1="140" y1="50" x2="140" y2="400" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.18"/>
+          <line x1="450" y1="50" x2="450" y2="400" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.15"/>
+          <line x1="0" y1="225" x2="280" y2="225" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.18"/>
+          <line x1="300" y1="225" x2="600" y2="225" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.15"/>
+          <!-- Sofa outline -->
+          <rect x="80" y="480" width="380" height="120" rx="4" fill="#161410" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.3"/>
+          <rect x="60" y="480" width="22" height="120" rx="2" fill="#1a1810" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.3"/>
+          <rect x="462" y="480" width="22" height="120" rx="2" fill="#1a1810" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.3"/>
+          <rect x="60" y="460" width="424" height="24" rx="2" fill="#1a1810" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.3"/>
+          <!-- Cushion lines -->
+          <line x1="207" y1="484" x2="207" y2="597" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.2"/>
+          <line x1="337" y1="484" x2="337" y2="597" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.2"/>
+          <!-- Coffee table -->
+          <rect x="140" y="620" width="240" height="60" rx="2" fill="#101009" stroke="#c9a96e" stroke-width="0.7" stroke-opacity="0.35"/>
+          <line x1="140" y1="650" x2="380" y2="650" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.2"/>
+          <!-- Ceiling light -->
+          <circle cx="300" cy="20" r="18" fill="none" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.35"/>
+          <circle cx="300" cy="20" r="8" fill="#c9a96e" opacity="0.1"/>
+          <line x1="300" y1="38" x2="300" y2="60" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.3"/>
+          <!-- Light beam from ceiling lamp -->
+          <polygon points="282,60 318,60 380,400 220,400" fill="#c9a96e" opacity="0.02"/>
+        </svg>
+      </div>
+      <div class="project-arrow">↗</div>
+      <div class="project-info">
+        <div class="project-cat">Rezidenčný · Webmesto</div>
+        <div class="project-name">Penthouse Skyline</div>
+        <div class="project-sub">680 m² · 2023</div>
+      </div>
+    </div>
+    <!-- Project 2 -->
+    <div class="project-card">
+      <div class="project-bg">
+        <svg viewBox="0 0 500 380" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <rect width="500" height="380" fill="#0d0c09"/>
+          <!-- Restaurant interior -->
+          <rect x="0" y="0" width="500" height="260" fill="#121008"/>
+          <rect x="0" y="260" width="500" height="120" fill="#0a0907"/>
+          <!-- Arch cutouts -->
+          <path d="M50,260 Q50,160 150,160 Q250,160 250,260" fill="#0f0d0a" stroke="#c9a96e" stroke-width="0.7" stroke-opacity="0.3"/>
+          <path d="M260,260 Q260,160 360,160 Q460,160 460,260" fill="#0f0d0a" stroke="#c9a96e" stroke-width="0.7" stroke-opacity="0.3"/>
+          <!-- Pendant lights -->
+          <circle cx="150" cy="60" r="18" fill="none" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.4"/>
+          <circle cx="150" cy="60" r="8" fill="#c9a96e" opacity="0.12"/>
+          <line x1="150" y1="0" x2="150" y2="42" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.3"/>
+          <circle cx="360" cy="60" r="18" fill="none" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.4"/>
+          <circle cx="360" cy="60" r="8" fill="#c9a96e" opacity="0.12"/>
+          <line x1="360" y1="0" x2="360" y2="42" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.3"/>
+          <!-- Tables -->
+          <ellipse cx="150" cy="310" rx="55" ry="25" fill="#131210" stroke="#c9a96e" stroke-width="0.7" stroke-opacity="0.35"/>
+          <ellipse cx="360" cy="310" rx="55" ry="25" fill="#131210" stroke="#c9a96e" stroke-width="0.7" stroke-opacity="0.35"/>
+          <!-- Chairs -->
+          <rect x="110" y="280" width="28" height="20" rx="2" fill="#0f0e0b" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.3"/>
+          <rect x="163" y="280" width="28" height="20" rx="2" fill="#0f0e0b" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.3"/>
+          <rect x="320" y="280" width="28" height="20" rx="2" fill="#0f0e0b" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.3"/>
+          <rect x="373" y="280" width="28" height="20" rx="2" fill="#0f0e0b" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.3"/>
+          <!-- Wall texture lines -->
+          <line x1="0" y1="140" x2="500" y2="140" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.15"/>
+          <line x1="0" y1="100" x2="500" y2="100" stroke="#c9a96e" stroke-width="0.3" stroke-opacity="0.1"/>
+        </svg>
+      </div>
+      <div class="project-arrow">↗</div>
+      <div class="project-info">
+        <div class="project-cat">Komerčný · Pixelmesto</div>
+        <div class="project-name">Restaurant Bookdev</div>
+        <div class="project-sub">240 m² · 2024</div>
+      </div>
+    </div>
+    <!-- Project 3 -->
+    <div class="project-card">
+      <div class="project-bg">
+        <svg viewBox="0 0 500 380" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <rect width="500" height="380" fill="#0c0b08"/>
+          <!-- Office lobby -->
+          <rect x="0" y="0" width="500" height="280" fill="#111008"/>
+          <rect x="0" y="280" width="500" height="100" fill="#090807"/>
+          <!-- Marble floor reflection -->
+          <rect x="0" y="280" width="500" height="100" fill="#0d0c09" opacity="0.8"/>
+          <line x1="0" y1="290" x2="500" y2="290" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.2"/>
+          <line x1="0" y1="310" x2="500" y2="310" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.15"/>
+          <line x1="0" y1="330" x2="500" y2="330" stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.12"/>
+          <!-- Vertical columns -->
+          <rect x="80" y="0" width="12" height="280" fill="#161310" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.2"/>
+          <rect x="200" y="0" width="12" height="280" fill="#161310" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.18"/>
+          <rect x="300" y="0" width="12" height="280" fill="#161310" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.18"/>
+          <rect x="410" y="0" width="12" height="280" fill="#161310" stroke="#c9a96e" stroke-width="0.5" stroke-opacity="0.2"/>
+          <!-- Reception desk -->
+          <rect x="140" y="210" width="230" height="60" rx="2" fill="#131110" stroke="#c9a96e" stroke-width="0.8" stroke-opacity="0.35"/>
+          <rect x="140" y="200" width="230" height="14" rx="1" fill="#1a1815" stroke="#c9a96e" stroke-width="0.6" stroke-opacity="0.4"/>
+          <!-- Gold accent strip on desk -->
+          <rect x="140" y="213" width="230" height="2" fill="#c9a96e" opacity="0.25"/>
+          <!-- Ceiling grid -->
+          <g stroke="#c9a96e" stroke-width="0.4" stroke-opacity="0.1">
+            <line x1="0" y1="40" x2="500" y2="40"/>
+            <line x1="0" y1="80" x2="500" y2="80"/>
+            <line x1="100" y1="0" x2="100" y2="120"/>
+            <line x1="200" y1="0" x2="200" y2="120"/>
+            <line x1="300" y1="0" x2="300" y2="120"/>
+            <line x1="400" y1="0" x2="400" y2="120"/>
+          </g>
+          <!-- Recessed ceiling lights -->
+          <circle cx="150" cy="30" r="5" fill="#c9a96e" opacity="0.15"/>
+          <circle cx="250" cy="30" r="5" fill="#c9a96e" opacity="0.15"/>
+          <circle cx="350" cy="30" r="5" fill="#c9a96e" opacity="0.15"/>
+          <circle cx="450" cy="30" r="5" fill="#c9a96e" opacity="0.15"/>
+        </svg>
+      </div>
+      <div class="project-arrow">↗</div>
+      <div class="project-info">
+        <div class="project-cat">Korporátny · Webmesto</div>
+        <div class="project-name">HQ Lobby Notfound & Co.</div>
+        <div class="project-sub">380 m² · 2024</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="services-inner">
+    <div>
+      <div class="section-tag reveal">Čo robíme</div>
+      <h2 class="section-title reveal reveal-delay-1">Naše<br><em>služby.</em></h2>
+      <div class="services-list reveal reveal-delay-2">
+        <div class="service-item">
+          <div class="service-name">Architektonický návrh</div>
+          <div class="service-desc">Od územného plánovania až po detailnú projektovú dokumentáciu. Komplexné riešenie vášho stavebného zámeru.</div>
+        </div>
+        <div class="service-item">
+          <div class="service-name">Interiérový dizajn</div>
+          <div class="service-desc">Premena priestoru na príbeh. Každý materiál, farba a svetlo sú starostlivo vybrané pre váš životný štýl.</div>
+        </div>
+        <div class="service-item">
+          <div class="service-name">3D Vizualizácie</div>
+          <div class="service-desc">Fotorealistické rendery, ktoré vám ukážu výsledok ešte pred začatím prác.</div>
+        </div>
+        <div class="service-item">
+          <div class="service-name">Rekonštrukcie</div>
+          <div class="service-desc">Dychom berúca premena starého na nové. Rešpektujeme históriu, pridávame súčasnosť.</div>
+        </div>
+        <div class="service-item">
+          <div class="service-name">Poradenstvo</div>
+          <div class="service-desc">Konzultácie pre investorov, developerov aj súkromné osoby. Správne rozhodnutie od začiatku.</div>
+        </div>
+      </div>
+    </div>
+    <div class="services-feature reveal reveal-delay-2">
+      <p class="services-feature-quote">
+        "Priestor nie je len kontajner pre život. Je to <em>jazyk</em>, ktorým hovoríme o tom, kto sme."
+      </p>
+      <p style="font-size:0.82rem; color: var(--text-muted); margin-bottom: 2.5rem; line-height:1.8;">
+        V Krenio Studio veríme, že každý projekt je príležitosťou vytvoriť niečo nadčasové. Kombinujeme overené architektonické princípy s inovatívnymi materiálmi a technológiami, aby výsledok vydržal desaťročia.
+      </p>
+      <div class="feature-pills">
+        <span class="pill">Udržateľnosť</span>
+        <span class="pill">LEED certifikát</span>
+        <span class="pill">Pasívne domy</span>
+        <span class="pill">Smart home</span>
+        <span class="pill">Biophilic design</span>
+        <span class="pill">Akustika</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process" id="process">
+  <div style="max-width:600px;">
+    <div class="section-tag reveal">Ako pracujeme</div>
+    <h2 class="section-title reveal reveal-delay-1">Váš projekt,<br>náš <em>proces.</em></h2>
+  </div>
+  <div class="process-steps">
+    <div class="process-step reveal">
+      <div class="step-num">01</div>
+      <h3 class="step-title">Prvé stretnutie</h3>
+      <p class="step-desc">Spoznáme vaše potreby, víziu a možnosti. Bez záväzkov, s otvorenou mysľou.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-1">
+      <div class="step-num">02</div>
+      <h3 class="step-title">Koncepčný návrh</h3>
+      <p class="step-desc">Vytvoríme prvotné skice, moodboardy a priestorové schémy. Tvar vašej predstavy.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-2">
+      <div class="step-num">03</div>
+      <h3 class="step-title">Detailný projekt</h3>
+      <p class="step-desc">Kompletná dokumentácia, materiálový výber, vizualizácie. Každý detail premyslený.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-3">
+      <div class="step-num">04</div>
+      <h3 class="step-title">Realizácia</h3>
+      <p class="step-desc">Sprevádzame vás celou stavbou. Dohľad, koordinácia, odovzdanie v termíne.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-tag reveal">Referencie</div>
+  <h2 class="section-title reveal reveal-delay-1">Čo hovoria<br>naši <em>klienti.</em></h2>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <p class="testimonial-text">Krenio Studio premenil náš sklad na reštauráciu, o ktorej sníva každý kuchár. Každý detail je premyslený, každý hosť si všimne tú starostlivosť.</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">MN</div>
+        <div>
+          <div class="author-name">Michal Novák</div>
+          <div class="author-title">Majiteľ, Restaurant Bookdev</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-1">
+      <p class="testimonial-text">Výsledok predbehol naše očakávania. Nové sídlo firmy vysiela presne tú správu o hodnotách, ktorú sme chceli. Profesionalita a kreativita v jednom.</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">LK</div>
+        <div>
+          <div class="author-name">Lucia Kratochvílová</div>
+          <div class="author-title">CEO, Notfound & Co.</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-2">
+      <p class="testimonial-text">Náš byt je teraz presne tým miestom, kde chceme tráviť čas. Krenio Studio nás pochopilo od prvého rozhovoru. Odporúčam každému.</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">TH</div>
+        <div>
+          <div class="author-name">Tomáš Horváth</div>
+          <div class="author-title">Súkromný klient</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="contact">
+  <div class="cta-label reveal">Začnite dnes</div>
+  <h2 class="cta-title reveal reveal-delay-1">Porozprávajme sa<br>o vašej <em>predstave.</em></h2>
+  <p class="cta-sub reveal reveal-delay-2">Každý veľký priestor začal jedným rozhovorom. Napíšte nám a spoločne vytvoríme niečo, čo vydží.</p>
+  <div class="cta-contact reveal reveal-delay-3">
+    <a href="mailto:studio@krenio.sk" class="cta-email">studio@krenio.sk</a>
+    <a href="#" class="btn-primary" style="text-decoration:none;">Naplánujte konzultáciu</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">Krenio Studio</a>
+  
+  <div class="footer-bottom">
+      <p>
+        &copy; 2026 Všetky práva vyhradené. | 
+        Projekt slúži ako ukážka, autor: <a href="https://mawebstudio.netlify.app/" target="_blank" style="color: var(--accent); text-decoration: underline; font-weight: 600;">Maroš Herman</a>
+      </p>
+    </div>
+
+  <ul class="footer-social">
+  <li>
+    <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+      </svg>
+      <span>Instagram</span>
+    </a>
+  </li>
+  <li>
+    <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+      </svg>
+      <span>Facebook</span>
+    </a>
+  </li>
+  <li>
+    <a href="https://linkedin.com" target="_blank" rel="noopener" aria-label="LinkedIn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+      </svg>
+      <span>LinkedIn</span>
+    </a>
+  </li>
+</ul>
+</footer>
+
+<script>
+  // Custom cursor — iba na zariadeniach bez dotyku
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('ring');
+  const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+
+  if (isTouchDevice) {
+    // Skryť kurzor elementy a vrátiť normálny kurzor
+    cursor.style.display = 'none';
+    ring.style.display = 'none';
+    document.body.style.cursor = 'auto';
+  } else {
+    let mx = -100, my = -100, rx = -100, ry = -100;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+
+    (function animRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animRing);
+    })();
+
+    // Hover effect on interactive elements
+    document.querySelectorAll('a, button, .project-card, .service-item').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '20px';
+        cursor.style.height = '20px';
+        ring.style.width = '56px';
+        ring.style.height = '56px';
+        ring.style.borderColor = 'rgba(201,169,110,0.8)';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '10px';
+        cursor.style.height = '10px';
+        ring.style.width = '36px';
+        ring.style.height = '36px';
+        ring.style.borderColor = 'rgba(201,169,110,0.5)';
+      });
+    });
+  }
+
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => io.observe(el));
+
+  // Animated counters
+  function animateCounter(el, target, duration = 1800) {
+    let start = null;
+    const step = (ts) => {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.floor(eased * target);
+      el.textContent = current + (el.dataset.suffix || '');
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const statNums = document.querySelectorAll('.stat-num');
+  const statIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const el = e.target;
+        const text = el.textContent;
+        const hasPlus = text.includes('+');
+        const hasPct = text.includes('%');
+        const num = parseInt(text);
+        el.dataset.suffix = hasPlus ? '+' : hasPct ? '%' : '';
+        animateCounter(el, num, 1600);
+        statIO.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  statNums.forEach(el => statIO.observe(el));
+
+  // Parallax on hero illustration
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const heroImg = document.querySelector('.hero-illustration');
+    if (heroImg && scrollY < window.innerHeight) {
+      heroImg.style.transform = `translateY(${scrollY * 0.15}px)`;
+    }
+  });
+
+
+  // ==========================================
+  // 			PREPÍNANIE REŽIMOV
+  // ==========================================
+  const themeToggle = document.getElementById('theme-toggle');
+  const themeIcon = document.getElementById('theme-icon');
+
+  // Skontroluje uložený režim z minulej návštevy
+  const currentTheme = localStorage.getItem('theme');
+  if (currentTheme === 'light') {
+    document.body.classList.add('light-mode');
+    if (themeIcon) themeIcon.textContent = '🌙'; 
+  }
+
+  // Funkcia prepínania po kliknutí
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      
+      if (document.body.classList.contains('light-mode')) {
+        localStorage.setItem('theme', 'light');
+        if (themeIcon) themeIcon.textContent = '🌙';
+      } else {
+        localStorage.setItem('theme', 'dark');
+        if (themeIcon) themeIcon.textContent = '☀️';
+      }
+    });
+  }
+  
+</script>
+</body>
+</html>
